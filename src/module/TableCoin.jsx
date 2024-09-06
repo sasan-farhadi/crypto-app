@@ -1,11 +1,16 @@
+import { RotatingLines } from 'react-loader-spinner'
+
+import styles from './TableCoin.module.css'
+
 import charUp from '../../src/assets/chart-up.svg'
 import charDown from '../../src/assets/chart-down.svg'
+import { useState } from 'react'
 
-const Tablecoin = ({ coins }) => {
-    console.log(coins)
+const Tablecoin = ({ coins, isLoading, currency }) => {
     return (
-        <div>
-            <table>
+        <div className={styles.container}>
+            {/* if load data success or failed */}
+            {isLoading ? <RotatingLines strokeColor='#3874ff' strokeWidth='2' /> : <table className={styles.table}>
                 <thead>
                     <tr>
                         <th>Coin</th>
@@ -19,11 +24,11 @@ const Tablecoin = ({ coins }) => {
                 <tbody>
                     {
                         coins.map(coin =>
-                            <TableRow coin={coin} key={coin.id} />
+                            <TableRow coin={coin} key={coin.id} currency={currency} />
                         )
                     }
                 </tbody>
-            </table>
+            </table>}
         </div>
     )
 }
@@ -33,18 +38,18 @@ export default Tablecoin
 
 
 //table row component 
-const TableRow = ({ coin: { name, image, symbol, total_volume, current_price, price_change_percentage_24h: price_change } }) => {
+const TableRow = ({ coin: { name, image, symbol, total_volume, current_price, price_change_percentage_24h: price_change }, currency }) => {
     return (
         <tr>
             <td>
-                <div>
+                <div className={styles.symbol}>
                     <img src={image} alt={name} />
                     <span>{symbol.toUpperCase()}</span>
                 </div>
             </td>
             <td>{name}</td>
-            <td>${current_price.toLocaleString()}</td>
-            <td>{price_change.toFixed(2)}%</td>
+            <td>{currency === "usd" ? "$ " : currency === "eur" ? "€ " : "¥ "}{current_price.toLocaleString()}</td>
+            <td className={price_change > 0 ? styles.success : styles.error}>{price_change.toFixed(2)}%</td>
             <td>{total_volume.toLocaleString()}</td>
             <td>{<img src={price_change > 0 ? charUp : charDown} alt={name} />}</td>
         </tr>
