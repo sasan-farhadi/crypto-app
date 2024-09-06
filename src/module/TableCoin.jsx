@@ -4,9 +4,9 @@ import styles from './TableCoin.module.css'
 
 import charUp from '../../src/assets/chart-up.svg'
 import charDown from '../../src/assets/chart-down.svg'
-import { useState } from 'react'
+import { marketChart } from '../services/cryptoApi'
 
-const Tablecoin = ({ coins, isLoading, currency }) => {
+const Tablecoin = ({ coins, isLoading, currency, setChart }) => {
     return (
         <div className={styles.container}>
             {/* if load data success or failed */}
@@ -24,7 +24,7 @@ const Tablecoin = ({ coins, isLoading, currency }) => {
                 <tbody>
                     {
                         coins.map(coin =>
-                            <TableRow coin={coin} key={coin.id} currency={currency} />
+                            <TableRow coin={coin} key={coin.id} currency={currency} setChart={setChart} />
                         )
                     }
                 </tbody>
@@ -38,11 +38,20 @@ export default Tablecoin
 
 
 //table row component 
-const TableRow = ({ coin: { name, image, symbol, total_volume, current_price, price_change_percentage_24h: price_change }, currency }) => {
+const TableRow = ({ coin: { id, name, image, symbol, total_volume, current_price, price_change_percentage_24h: price_change }, currency, setChart }) => {
+    const showHandler = async () => {
+        try {
+            const res = await fetch(marketChart(id))
+            const json = await res.json()
+            setChart(json)
+        } catch (error) {
+            setChart(null)
+        }
+    }
     return (
         <tr>
             <td>
-                <div className={styles.symbol}>
+                <div className={styles.symbol} onClick={showHandler}>
                     <img src={image} alt={name} />
                     <span>{symbol.toUpperCase()}</span>
                 </div>
